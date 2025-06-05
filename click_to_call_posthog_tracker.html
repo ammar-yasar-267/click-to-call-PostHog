@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dynamic Phone Number Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+        }
+        
+        .phone-button {
+            display: inline-flex;
+            align-items: center;
+            background: #28a745;
+            color: white;
+            text-decoration: none;
+            padding: 12px 20px;
+            border-radius: 25px;
+            font-weight: bold;
+            font-size: 18px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(40, 167, 69, 0.3);
+        }
+        
+        .phone-button:hover {
+            background: #218838;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(40, 167, 69, 0.4);
+        }
+        
+        .phone-icon {
+            margin-right: 10px;
+            font-size: 16px;
+        }
+        
+        .test-section {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+        
+        .number-display {
+            background: #e9ecef;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 15px 0;
+            font-family: monospace;
+            font-size: 16px;
+        }
+        
+        .timer {
+            color: #666;
+            font-size: 14px;
+            margin-top: 10px;
+        }
+        
+        .status {
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 5px;
+            font-weight: bold;
+        }
+        
+        .status.success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        
+        .status.info {
+            background: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+        
+        .controls {
+            margin: 20px 0;
+        }
+        
+        button {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-right: 10px;
+            font-size: 14px;
+        }
+        
+        button:hover {
+            background: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <!-- Google Tag Manager (noscript) -->
+    <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-XXXXXXX"
+    height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+    <!-- End Google Tag Manager (noscript) -->
+
+    <div class="header">
+        <h1>🔥 Dynamic Phone Number Testing</h1>
+        <p>This page simulates the client's dynamic phone number system</p>
+    </div>
+
+    <div class="test-section">
+        <h2>📞 Dynamic Click-to-Call Button</h2>
+        <p>This button updates every 10 seconds with a new phone number, just like the client's system:</p>
+        
+        <!-- This mimics their exact HTML structure -->
+        <header id="_header-3-9" class="oxy-header-wrapper">
+            <div id="_header_row-4-9" class="oxy-header-row">
+                <div class="oxy-header-container">
+                    <div id="_header_left-5-9" class="oxy-header-left">
+                        <a id="div_block-11-9" class="phone-button" href="tel:866-776-6361">
+                            <div id="fancy_icon-8-9" class="phone-icon">📞</div>
+                            <span id="phone-text">📞 Call Now: 866-776-6361</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <div class="number-display">
+            <strong>Current Number:</strong> <span id="current-number">866-776-6361</span>
+            <div class="timer">Next change in: <span id="countdown">10</span> seconds</div>
+        </div>
+
+        <div class="controls">
+            <button onclick="changeNumber()">🔄 Force Number Change</button>
+            <button onclick="toggleAutoChange()">⏸️ Toggle Auto-Change</button>
+            <button onclick="clearEvents()">🗑️ Clear Event Log</button>
+        </div>
+    </div>
+
+    <div class="test-section">
+        <h2>📊 Event Testing & Debug</h2>
+        <div id="event-log"></div>
+        <div class="status info">
+            <strong>Status:</strong> Ready for GTM testing - Click the phone button to test event capture
+        </div>
+    </div>
+
+    <div class="test-section">
+        <h2>🛠️ PostHog Integration Test</h2>
+        <p>Once GTM is configured, events will appear here:</p>
+        <div id="posthog-events"></div>
+    </div>
+
+    <!-- Mock PostHog for testing (replace with real PostHog script) -->
+    <script>
+        // Mock PostHog object for testing
+        window.posthog = {
+            capture: function(event, properties) {
+                console.log('PostHog Event:', event, properties);
+                logEvent('PostHog', event, properties);
+            }
+        };
+
+        // Array of phone numbers to cycle through
+        const phoneNumbers = [
+            '866-776-6361',
+            '877-555-0123',
+            '800-123-4567',
+            '855-999-8888',
+            '844-202-3456',
+            '833-777-9999'
+        ];
+
+        let currentIndex = 0;
+        let autoChangeEnabled = true;
+        let countdownTimer;
+        let changeTimer;
+
+        function changeNumber() {
+            currentIndex = (currentIndex + 1) % phoneNumbers.length;
+            const newNumber = phoneNumbers[currentIndex];
+            
+            // Update the href attribute
+            const phoneLink = document.getElementById('div_block-11-9');
+            phoneLink.href = `tel:${newNumber}`;
+            
+            // Update the display text
+            document.getElementById('phone-text').textContent = `📞 Call Now: ${newNumber}`;
+            document.getElementById('current-number').textContent = newNumber;
+            
+            logEvent('System', 'number_changed', { new_number: newNumber });
+            
+            // Reset countdown
+            startCountdown();
+        }
+
+        function startCountdown() {
+            let seconds = 10;
+            const countdownElement = document.getElementById('countdown');
+            
+            clearInterval(countdownTimer);
+            countdownTimer = setInterval(() => {
+                seconds--;
+                countdownElement.textContent = seconds;
+                
+                if (seconds <= 0) {
+                    clearInterval(countdownTimer);
+                    if (autoChangeEnabled) {
+                        changeNumber();
+                    }
+                }
+            }, 1000);
+        }
+
+        function toggleAutoChange() {
+            autoChangeEnabled = !autoChangeEnabled;
+            const button = event.target;
+            button.textContent = autoChangeEnabled ? '⏸️ Toggle Auto-Change' : '▶️ Toggle Auto-Change';
+            
+            if (autoChangeEnabled) {
+                startCountdown();
+            } else {
+                clearInterval(countdownTimer);
+                document.getElementById('countdown').textContent = 'Paused';
+            }
+        }
+
+        function logEvent(source, event, data) {
+            const eventLog = document.getElementById('event-log');
+            const timestamp = new Date().toLocaleTimeString();
+            
+            const eventDiv = document.createElement('div');
+            eventDiv.className = 'status success';
+            eventDiv.innerHTML = `
+                <strong>[${timestamp}] ${source}:</strong> ${event}<br>
+                <code>${JSON.stringify(data, null, 2)}</code>
+            `;
+            
+            eventLog.insertBefore(eventDiv, eventLog.firstChild);
+        }
+
+        function clearEvents() {
+            document.getElementById('event-log').innerHTML = '';
+        }
+
+        // Add click event listener for testing (GTM will replace this)
+        document.getElementById('div_block-11-9').addEventListener('click', function(e) {
+            // Don't actually make the call in testing
+            e.preventDefault();
+            
+            const clickedNumber = this.href.replace('tel:', '');
+            
+            // This is what GTM should capture
+            logEvent('Click Handler', 'phone_button_clicked', {
+                button_id: 'div_block-11-9',
+                phone_number: clickedNumber,
+                href: this.href,
+                timestamp: new Date().toISOString()
+            });
+            
+            // Mock the PostHog event that GTM should fire
+            posthog.capture('gtm_button_clicked', {
+                button_id: 'click_to_call',
+                phone_number: clickedNumber,
+                dynamic_number: clickedNumber
+            });
+        });
+
+        // Start the dynamic number changing
+        startCountdown();
+
+        // Add some visual feedback
+        console.log('🚀 Dynamic Phone Number Test Page Loaded');
+        console.log('📱 Phone numbers will change every 10 seconds');
+        console.log('🎯 Click the phone button to test event capture');
+    </script>
+
+    <!-- Google Tag Manager -->
+    <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+    new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+    j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+    'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+    })(window,document,'script','dataLayer','GTM-MRFVBHDN');</script>
+    <!-- End Google Tag Manager -->
+</body>
+</html>
