@@ -193,6 +193,11 @@
             '833-777-9999'
         ];
 
+        document.getElementById('div_block-11-9').addEventListener('click', function(e) {
+            e.preventDefault(); // Prevents phone app from opening
+            console.log('Click captured, phone app prevented');
+        });
+
         let currentIndex = 0;
         let autoChangeEnabled = true;
         let countdownTimer;
@@ -280,5 +285,6 @@
     'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
     })(window,document,'script','dataLayer','GTM-MRFVBHDN');</script>
     <!-- End Google Tag Manager -->
+     
 </body>
 </html>
