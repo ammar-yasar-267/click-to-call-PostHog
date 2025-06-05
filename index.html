@@ -264,24 +264,6 @@
             document.getElementById('event-log').innerHTML = '';
         }
 
-        // Add click event listener to prevent actual calling during testing
-        document.getElementById('div_block-11-9').addEventListener('click', function(e) {
-            // Prevent the phone app from opening during testing
-            e.preventDefault();
-            
-            const clickedNumber = this.href.replace('tel:', '');
-            
-            // Log the click for debugging
-            logEvent('Click Handler', 'phone_button_clicked', {
-                button_id: 'div_block-11-9',
-                phone_number: clickedNumber,
-                href: this.href,
-                timestamp: new Date().toISOString()
-            });
-            
-            console.log('📞 Click prevented - GTM should capture this event');
-        });
-
         // Start the dynamic number changing
         startCountdown();
 
