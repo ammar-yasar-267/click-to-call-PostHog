@@ -163,15 +163,23 @@
         <div id="posthog-events"></div>
     </div>
 
-    <!-- Mock PostHog for testing (replace with real PostHog script) -->
+    <!-- PostHog Setup -->
     <script>
-        // Mock PostHog object for testing
-        window.posthog = {
-            capture: function(event, properties) {
-                console.log('PostHog Event:', event, properties);
-                logEvent('PostHog', event, properties);
-            }
-        };
+        !function(t,e){var o,n,p,r;e.__SV||(window.posthog=e,e._i=[],e.init=function(i,s,a){function g(t,e){var o=e.split(".");2==o.length&&(t=t[o[0]],e=o[1]);t[e]=function(){t.push([e].concat(Array.prototype.slice.call(arguments,0)))}}(p=t.createElement("script")).type="text/javascript",p.async=!0,p.src=s.api_host+"/static/array.js",(r=t.getElementsByTagName("script")[0]).parentNode.insertBefore(p,r);var u=e;for(void 0!==a?u=e[a]=[]:a="posthog",u.people=u.people||[],u.toString=function(t){var e="posthog";return"posthog"!==a&&(e+="."+a),t||(e+=" (stub)"),e},u.people.toString=function(){return u.toString(1)+".people (stub)"},o="capture identify alias people.set people.set_once set_config register register_once unregister opt_out_capturing has_opted_out_capturing opt_in_capturing reset isFeatureEnabled onFeatureFlags getFeatureFlag getFeatureFlagPayload reloadFeatureFlags group updateEarlyAccessFeatureEnrollment getEarlyAccessFeatures getActiveMatchingSurveys getSurveys onSessionId".split(" "),n=0;n<o.length;n++)g(u,o[n]);e._i.push([i,s,a])},e.__SV=1)}(document,window.posthog||[]);
+        posthog.init('phc-test-key', {api_host: 'https://app.posthog.com'})
+    </script>
+
+    <!-- Mock PostHog for testing when real PostHog isn't available -->
+    <script>
+        // Fallback mock if PostHog fails to load
+        if (!window.posthog || !window.posthog.capture) {
+            window.posthog = {
+                capture: function(event, properties) {
+                    console.log('PostHog Event:', event, properties);
+                    logEvent('PostHog', event, properties);
+                }
+            };
+        }
 
         // Array of phone numbers to cycle through
         const phoneNumbers = [
@@ -186,7 +194,6 @@
         let currentIndex = 0;
         let autoChangeEnabled = true;
         let countdownTimer;
-        let changeTimer;
 
         function changeNumber() {
             currentIndex = (currentIndex + 1) % phoneNumbers.length;
@@ -255,28 +262,8 @@
             document.getElementById('event-log').innerHTML = '';
         }
 
-        // Add click event listener for testing (GTM will replace this)
-        document.getElementById('div_block-11-9').addEventListener('click', function(e) {
-            // Don't actually make the call in testing
-            e.preventDefault();
-            
-            const clickedNumber = this.href.replace('tel:', '');
-            
-            // This is what GTM should capture
-            logEvent('Click Handler', 'phone_button_clicked', {
-                button_id: 'div_block-11-9',
-                phone_number: clickedNumber,
-                href: this.href,
-                timestamp: new Date().toISOString()
-            });
-            
-            // Mock the PostHog event that GTM should fire
-            posthog.capture('gtm_button_clicked', {
-                button_id: 'click_to_call',
-                phone_number: clickedNumber,
-                dynamic_number: clickedNumber
-            });
-        });
+        // Remove the manual click handler - GTM will handle all clicks
+        // This prevents double-firing of events
 
         // Start the dynamic number changing
         startCountdown();
@@ -284,7 +271,7 @@
         // Add some visual feedback
         console.log('🚀 Dynamic Phone Number Test Page Loaded');
         console.log('📱 Phone numbers will change every 10 seconds');
-        console.log('🎯 Click the phone button to test event capture');
+        console.log('🎯 GTM will handle click tracking automatically');
     </script>
 
     <!-- Google Tag Manager -->
@@ -292,7 +279,7 @@
     new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
     j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
     'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
-    })(window,document,'script','dataLayer','GTM-MRFVBHDN');</script>
+    })(window,document,'script','dataLayer','GTM-XXXXXXX');</script>
     <!-- End Google Tag Manager -->
 </body>
 </html>
