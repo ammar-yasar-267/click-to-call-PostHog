@@ -231,8 +231,7 @@
             const phoneLink = document.getElementById('div_block-11-9');
             phoneLink.href = `tel:+1-${newNumber}`;
             
-            // Update the display text
-            document.getElementById('phone-text').textContent = `📞 Call Now: ${newNumber}`;
+            // Update the display number (no phone-text element in this structure)
             document.getElementById('current-number').textContent = newNumber;
             
             logEvent('System', 'number_changed', { new_number: newNumber });
