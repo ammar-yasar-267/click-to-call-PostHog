@@ -113,8 +113,6 @@
     <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-MRFVBHDN"
     height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     <!-- End Google Tag Manager (noscript) -->
-    
-    <!-- REPLACE GTM-XXXXXXX WITH YOUR ACTUAL GTM ID -->
 
     <div class="header">
         <h1>🔥 Dynamic Phone Number Testing</h1>
@@ -161,26 +159,48 @@
 
     <div class="test-section">
         <h2>🛠️ PostHog Integration Test</h2>
-        <p>Once GTM is configured, events will appear here:</p>
+        <p>Events will appear here and in browser console:</p>
         <div id="posthog-events"></div>
     </div>
 
-    <!-- PostHog Setup -->
+    <!-- PostHog Setup with REAL API KEY -->
     <script>
         !function(t,e){var o,n,p,r;e.__SV||(window.posthog=e,e._i=[],e.init=function(i,s,a){function g(t,e){var o=e.split(".");2==o.length&&(t=t[o[0]],e=o[1]);t[e]=function(){t.push([e].concat(Array.prototype.slice.call(arguments,0)))}}(p=t.createElement("script")).type="text/javascript",p.async=!0,p.src=s.api_host+"/static/array.js",(r=t.getElementsByTagName("script")[0]).parentNode.insertBefore(p,r);var u=e;for(void 0!==a?u=e[a]=[]:a="posthog",u.people=u.people||[],u.toString=function(t){var e="posthog";return"posthog"!==a&&(e+="."+a),t||(e+=" (stub)"),e},u.people.toString=function(){return u.toString(1)+".people (stub)"},o="capture identify alias people.set people.set_once set_config register register_once unregister opt_out_capturing has_opted_out_capturing opt_in_capturing reset isFeatureEnabled onFeatureFlags getFeatureFlag getFeatureFlagPayload reloadFeatureFlags group updateEarlyAccessFeatureEnrollment getEarlyAccessFeatures getActiveMatchingSurveys getSurveys onSessionId".split(" "),n=0;n<o.length;n++)g(u,o[n]);e._i.push([i,s,a])},e.__SV=1)}(document,window.posthog||[]);
-        posthog.init('phc-test-key', {api_host: 'https://app.posthog.com'})
+        
+        // Initialize with your real API key
+        posthog.init('phc_aJLkvPF1Rof4kR1j9nlkHyXTpdwTya6xr2NgBcUkyWR', {
+            api_host: 'https://us.i.posthog.com'
+        });
+        
+        console.log('✅ PostHog initialized with real API key');
     </script>
 
-    <!-- Mock PostHog for testing when real PostHog isn't available -->
     <script>
-        // Fallback mock if PostHog fails to load
-        if (!window.posthog || !window.posthog.capture) {
-            window.posthog = {
-                capture: function(event, properties) {
-                    console.log('PostHog Event:', event, properties);
-                    logEvent('PostHog', event, properties);
-                }
-            };
+        // Enhanced logging function that displays events on page
+        function logEvent(source, event, data) {
+            const eventLog = document.getElementById('event-log');
+            const posthogLog = document.getElementById('posthog-events');
+            const timestamp = new Date().toLocaleTimeString();
+            
+            const eventDiv = document.createElement('div');
+            eventDiv.className = 'status success';
+            eventDiv.innerHTML = `
+                <strong>[${timestamp}] ${source}:</strong> ${event}<br>
+                <code>${JSON.stringify(data, null, 2)}</code>
+            `;
+            
+            eventLog.insertBefore(eventDiv, eventLog.firstChild);
+            
+            // Also log PostHog events separately
+            if (source === 'PostHog') {
+                const posthogDiv = document.createElement('div');
+                posthogDiv.className = 'status success';
+                posthogDiv.innerHTML = `
+                    <strong>[${timestamp}] PostHog Event Sent:</strong><br>
+                    <code>${JSON.stringify(data, null, 2)}</code>
+                `;
+                posthogLog.insertBefore(posthogDiv, posthogLog.firstChild);
+            }
         }
 
         // Array of phone numbers to cycle through
@@ -246,22 +266,9 @@
             }
         }
 
-        function logEvent(source, event, data) {
-            const eventLog = document.getElementById('event-log');
-            const timestamp = new Date().toLocaleTimeString();
-            
-            const eventDiv = document.createElement('div');
-            eventDiv.className = 'status success';
-            eventDiv.innerHTML = `
-                <strong>[${timestamp}] ${source}:</strong> ${event}<br>
-                <code>${JSON.stringify(data, null, 2)}</code>
-            `;
-            
-            eventLog.insertBefore(eventDiv, eventLog.firstChild);
-        }
-
         function clearEvents() {
             document.getElementById('event-log').innerHTML = '';
+            document.getElementById('posthog-events').innerHTML = '';
         }
 
         // Start the dynamic number changing
@@ -271,6 +278,21 @@
         console.log('🚀 Dynamic Phone Number Test Page Loaded');
         console.log('📱 Phone numbers will change every 10 seconds');
         console.log('🎯 GTM will handle click tracking automatically');
+        
+        // Test PostHog connection
+        setTimeout(() => {
+            if (window.posthog) {
+                console.log('✅ PostHog is ready');
+                // Send a test event to verify connection
+                posthog.capture('page_loaded', {
+                    page: 'phone_test',
+                    timestamp: new Date().toISOString()
+                });
+                logEvent('PostHog', 'page_loaded', { page: 'phone_test' });
+            } else {
+                console.log('❌ PostHog not loaded');
+            }
+        }, 2000);
     </script>
 
     <!-- Google Tag Manager -->
@@ -280,6 +302,5 @@
     'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
     })(window,document,'script','dataLayer','GTM-MRFVBHDN');</script>
     <!-- End Google Tag Manager -->
-     
 </body>
 </html>
