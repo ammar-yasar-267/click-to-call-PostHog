@@ -169,7 +169,14 @@
         
         // Initialize with your real API key
         posthog.init('phc_aJLkvPF1Rof4kR1j9nlkHyXTpdwTya6xr2NgBcUkyWR', {
-            api_host: 'https://us.i.posthog.com'
+            api_host: 'https://us.i.posthog.com',
+            autocapture: false,
+            capture_pageview: false,
+            capture_pageleave: false,
+            loaded: function(posthog) {
+                posthog.opt_out_capturing();
+                posthog.opt_in_capturing(); // Re-enables only manual events
+            }
         });
         
         console.log('✅ PostHog initialized with real API key');
