@@ -124,20 +124,17 @@
         <p>This button updates every 10 seconds with a new phone number, just like the client's system:</p>
         
         <!-- This mimics their exact HTML structure -->
-        <header id="_header-3-9" class="oxy-header-wrapper oxy-sticky-header oxy-header">
-        <div id="_header_row-4-9" class="oxy-header-row">
-            <div class="oxy-header-container">
-            <div id="_header_left-5-9" class="oxy-header-left">
-                <a id="div_block-11-9" class="ct-link" href="tel:+1-866-776-6361">
-                <div id="fancy_icon-8-9" class="ct-fancy-icon phone-icon">
-                    <svg id="svg-fancy_icon-8-9">
-                    <use xlink:href="#FontAwesomeicon-phone"></use>
-                    </svg>
+        <header id="_header-3-9" class="oxy-header-wrapper">
+            <div id="_header_row-4-9" class="oxy-header-row">
+                <div class="oxy-header-container">
+                    <div id="_header_left-5-9" class="oxy-header-left">
+                        <a id="div_block-11-9" class="phone-button" href="tel:866-776-6361">
+                            <div id="fancy_icon-8-9" class="phone-icon">📞</div>
+                            <span id="phone-text">📞 Call Now: 866-776-6361</span>
+                        </a>
+                    </div>
                 </div>
-                </a>
             </div>
-            </div>
-        </div>
         </header>
 
         <div class="number-display">
@@ -172,10 +169,7 @@
         
         // Initialize with your real API key
         posthog.init('phc_aJLkvPF1Rof4kR1j9nlkHyXTpdwTya6xr2NgBcUkyWR', {
-            api_host: 'https://us.i.posthog.com',
-            autocapture: false,
-            capture_pageview: false,
-            capture_pageleave: false
+            api_host: 'https://us.i.posthog.com'
         });
         
         console.log('✅ PostHog initialized with real API key');
@@ -229,10 +223,9 @@
             
             // Update the href attribute
             const phoneLink = document.getElementById('div_block-11-9');
-            phoneLink.href = `tel:${newNumber}`;
+            phoneLink.href = `tel:+1-${newNumber}`;
             
-            // Update the display text
-            document.getElementById('phone-text').textContent = `📞 Call Now: ${newNumber}`;
+            // Update the display number (no phone-text element to update)
             document.getElementById('current-number').textContent = newNumber;
             
             logEvent('System', 'number_changed', { new_number: newNumber });
